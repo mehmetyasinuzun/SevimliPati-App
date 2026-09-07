@@ -1,0 +1,13 @@
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SevimliPati</title><meta name="robots" content="noindex">
+<script>
+// GitHub Pages 404'u yalniz depo kokunden okur. Web uygulamasi HASH yonlendirme kullanir ama
+// sifre yenileme baglantisi /uygulama/sifre-yenile YOLUNA gelir: yolu birak, sorgu ve # (token) ile
+// uygulamanin kokune don. Uygulama niyeti URL parametrelerinden okur (kurtarmaBaglantisiMi), yoldan degil.
+var app='/SevimliPati-App/uygulama/';
+if (location.pathname.indexOf(app)===0 && location.pathname!==app) {
+  location.replace(location.origin+app+location.search+location.hash);
+}
+</script>
+<style>body{margin:0;background:#FBF4EC;color:#2A1B12;font-family:Nunito,system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;text-align:center}a{color:#B5431F}</style>
+</head><body><div><h1>Sayfa bulunamadı</h1><p><a href="/SevimliPati-App/">Ana sayfaya dön</a> · <a href="/SevimliPati-App/uygulama/">Web uygulaması</a></p></div></body></html>
