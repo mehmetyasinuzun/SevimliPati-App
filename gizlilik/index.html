@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gizlilik Politikası — SevimliPati</title>
+<meta name="description" content="SevimliPati mobil uygulamasının gizlilik politikası.">
+<style>
+  :root { color-scheme: light dark; --zemin:#fff; --mürekkep:#1c1917; --sönük:#57534e;
+           --çizgi:#e7e5e4; --vurgu:#F0764A; --kod:#f5f5f4; }
+  @media (prefers-color-scheme: dark) {
+    :root { --zemin:#1c1917; --mürekkep:#f5f5f4; --sönük:#a8a29e; --çizgi:#44403c; --kod:#292524; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--zemin); color:var(--mürekkep);
+         font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  main { max-width:46rem; margin:0 auto; padding:2rem 1.15rem 5rem; }
+  h1 { font-size:1.7rem; line-height:1.25; margin:0 0 .35rem; }
+  h2 { font-size:1.15rem; margin:2.4rem 0 .6rem; padding-top:1.1rem;
+        border-top:1px solid var(--çizgi); }
+  p { margin:.75rem 0; }
+  ul { margin:.75rem 0; padding-left:1.25rem; }
+  li { margin:.3rem 0; }
+  code { background:var(--kod); padding:.1em .35em; border-radius:4px;
+          font-size:.87em; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  a { color:var(--vurgu); }
+  .kaydir { overflow-x:auto; margin:1rem 0; }
+  table { border-collapse:collapse; width:100%; font-size:.9rem; }
+  th, td { border:1px solid var(--çizgi); padding:.5rem .6rem; text-align:left; vertical-align:top; }
+  th { background:var(--kod); font-weight:600; }
+  footer { margin-top:3rem; padding-top:1rem; border-top:1px solid var(--çizgi);
+            color:var(--sönük); font-size:.85rem; }
+</style>
+</head>
+<body>
+<main>
+<h1>Gizlilik Politikası — SevimliPati</h1>
+<p><strong>Son güncelleme:</strong> 6 Eylül 2026</p>
+<h2>1. Veri sorumlusu</h2>
+<p>SevimliPati ("biz"), SevimliPati mobil uygulaması ve web arayüzü ("Uygulama") üzerinden işlenen kişisel verilerin veri sorumlusudur. İletişim: destek@sevimlipati.com</p>
+<h2>2. Hangi verileri, neden işliyoruz</h2>
+<p>Aşağıdaki tablo uygulamanın veritabanı şemasından çıkarılmıştır; burada yazmayan bir kişisel veri kategorisi toplanmaz.</p>
+<div class="kaydir"><table><thead><tr><th>Veri</th><th>Nerede saklanır</th><th>Neden</th><th>Hukuki dayanak (KVKK m.5)</th></tr></thead><tbody><tr><td>Ad soyad, e-posta, telefon, profil fotoğrafı, kısa biyografi</td><td><code>profiles</code>, Supabase Auth</td><td>Hesap oluşturma, tarafların birbirini tanıması, iletişim</td><td>Sözleşmenin kurulması ve ifası</td></tr><tr><td>18 yaş beyanı ve Kullanım Koşulları kabul kaydı (sürüm, zaman)</td><td><code>profiles</code></td><td>Sözleşmenin kurulması, kabulün ispatı</td><td>Hukuki yükümlülük</td></tr><tr><td>Kampanya bildirimi izni ve izin geçmişi (onay/ret, zaman, kaynak)</td><td><code>profiles</code>, <code>marketing_consent_log</code></td><td>Kampanya bildirimini yalnız izin verene göndermek; izin ve ret ispatı</td><td>Açık rıza</td></tr><tr><td>Köpek adı, doğum tarihi, kilo, davranış notları, fotoğrafları</td><td><code>dogs</code>, <code>dog_photos</code></td><td>Hizmetin verilebilmesi, gezdiricinin hayvanı tanıması</td><td>Sözleşmenin ifası</td></tr><tr><td>Alma adresi ve koordinatları</td><td><code>dog_addresses</code></td><td>Gezdiricinin adrese ulaşması, kapı doğrulaması</td><td>Sözleşmenin ifası</td></tr><tr><td>Yürüyüş sırasındaki konum kaydı (GPS rotası)</td><td><code>route_logs</code>, sonra <code>walks.route_path</code></td><td>Sahibin canlı takibi, uyuşmazlıkta kanıt, hayvan güvenliği</td><td>Meşru menfaat + sözleşmenin ifası</td></tr><tr><td>Yürüyüş fotoğrafları ve olay kayıtları</td><td><code>walk_photos</code>, <code>walk_events</code>, <code>incidents</code></td><td>Hizmetin kanıtı, şikâyet incelemesi</td><td>Sözleşmenin ifası, hukuki yükümlülük</td></tr><tr><td>Değerlendirme ve yorumlar</td><td><code>reviews</code></td><td>Güven puanı, hizmet kalitesi</td><td>Meşru menfaat</td></tr><tr><td>Jeton, cüzdan ve ödeme kayıtları (kart bilgisi HARİÇ)</td><td><code>token_lots</code>, <code>wallet_transactions</code>, <code>payments</code></td><td>Ücretlendirme, muhasebe</td><td>Hukuki yükümlülük</td></tr><tr><td>Gezdirici belgeleri (kimlik, adli sicil, adres belgesi, sertifika)</td><td><code>walker_documents</code> + özel depolama kovası</td><td>Gezdirici doğrulaması, hayvan ve ev güvenliği</td><td>Meşru menfaat, açık rıza</td></tr><tr><td>Cihaz bildirim jetonu, cihaz modeli, işletim sistemi sürümü</td><td><code>device_tokens</code>, <code>error_logs</code></td><td>Bildirim gönderimi, çökme teşhisi</td><td>Meşru menfaat</td></tr><tr><td>Hata kayıtları (hata mesajı, ekran, uygulama sürümü)</td><td><code>error_logs</code></td><td>Hataların giderilmesi</td><td>Meşru menfaat</td></tr></tbody></table></div>
+<p><strong>Toplamadıklarımız:</strong> kredi kartı numarası (ödeme sağlayıcısında kalır), reklam kimliği, kişi rehberi, mikrofon, çağrı kayıtları, sağlık verisi, doğum tarihiniz (yaş için yalnız 18+ beyanınızı ve zamanını tutarız).</p>
+<h2>3. Konum verisi</h2>
+<p>Konum yalnızca <strong>gezdirici</strong>, bir yürüyüşü aktif olarak yürütürken alınır: "yola çıktım" ile "yürüyüşü tamamla" arasında. Sahip tarafında konum toplanmaz.</p>
+<p>Bu pencere içinde kayıt, uygulama arka plana alınsa ya da ekran kapansa bile sürer — yoksa gezdirici telefonu cebine koyduğu anda rota kopar ve yürüyüşün kaydı yarım kalır. Android bu sırada <strong>kalıcı bir bildirim</strong> gösterir: bildirim ekranda durduğu sürece konum alınıyor demektir. Kayıt yürüyüş bittiğinde durur.</p>
+<p>Buna karşılık <strong>"her zaman konum" izni (<code>ACCESS_BACKGROUND_LOCATION</code>) istenmez</strong>: uygulama, bir yürüyüş yürütmediğiniz sürece konumunuza erişemez.</p>
+<p>Konum, yürüyüşü izleyen sahibe ve uyuşmazlık halinde yöneticiye gösterilir. Ham rota kayıtları <strong>7 gün</strong> sonra özete dönüştürülüp <code>walks.route_path</code> içinde saklanır; özette zaman damgaları tutulmaz, yalnızca yolun kendisi kalır.</p>
+<h2>4. Fotoğraf ve kamera</h2>
+<p>Fotoğraf yalnız siz seçtiğinizde yüklenir (köpek profili, yürüyüş kanıtı, gezdirici belgesi). Galeriniz taranmaz.</p>
+<h2>5. Kimlerle paylaşıyoruz</h2>
+<ul><li><strong>Karşı taraf:</strong> sahip ve atanan gezdirici, hizmetin gerektirdiği kadarını</li></ul>
+<p>görür (ad, köpek bilgisi, adres — adres yalnız iş kabul edildikten sonra).</p>
+<ul><li><strong>Supabase</strong> (veritabanı, kimlik doğrulama, dosya depolama, sunucusuz</li></ul>
+<p>fonksiyonlar) — altyapı sağlayıcı.</p>
+<ul><li><strong>Google Firebase Cloud Messaging</strong> — yalnız bildirim gönderimi.</li><li><strong>Ödeme sağlayıcısı</strong> — ödeme işlemleri; kart verisi bize hiç ulaşmaz.</li><li><strong>Yetkili kamu kurumları</strong> — hukuki yükümlülük halinde.</li></ul>
+<p>Verilerinizi reklam amacıyla kimseye satmıyor, kiralamıyoruz.</p>
+<h2>6. Saklama süreleri (uygulamada zamanlanmış işlerle uygulanır)</h2>
+<div class="kaydir"><table><thead><tr><th>Veri</th><th>Süre</th></tr></thead><tbody><tr><td>Ham GPS rota kayıtları</td><td>7 gün, sonra özet arşiv</td></tr><tr><td>Bildirimler</td><td>Okuduklarınız 90 gün sonra silinir; <strong>okumadıklarınız</strong> siz okuyana ya da hesabınız silinene kadar durur</td></tr><tr><td>Hata kayıtları</td><td>180 gün</td></tr><tr><td>Gönderim kuyruğu kayıtları</td><td>Gönderilmiş ya da başarısız olmuş kayıtlar 14 gün; sırada bekleyen bir kayıt gönderilene kadar durur</td></tr><tr><td>Kampanya izni ve Kullanım Koşulları kabul kayıtları</td><td>Geçerlilikleri sona erdikten sonra 3 yıl (mevzuat); hesap kapatılınca silinmez, kimliğinizle bağı kesilir</td></tr><tr><td>Hesap, yürüyüş ve ödeme kayıtları</td><td>Hesap silinene kadar; muhasebe kayıtları mevzuat gereği 10 yıl</td></tr></tbody></table></div>
+<h2>7. Haklarınız ve hesap silme</h2>
+<p>KVKK m.11 kapsamında verilerinize erişme, düzeltme, silme, işlemeye itiraz etme ve taşınabilirlik haklarınız vardır. Uygulama içinden <strong>Ayarlar → Hesabı sil</strong> ile hesabınızı kendiniz kapatabilirsiniz. Ne olduğu tam olarak şudur (uygulamanın kodundan ölçülmüştür, 2026-09-05):</p>
+<ul><li><strong>Anonimleştirilir:</strong> adınız, e-postanız, telefonunuz, doğum tarihiniz,</li></ul>
+<p>profil fotoğrafınız ve biyografiniz. Hesap kaydı silinmez; kimliğinizle bağlantısı kesilir.</p>
+<ul><li><strong>Silinir:</strong> köpek fotoğraflarınız, bildirimleriniz, gezdirici belgeleriniz,</li></ul>
+<p>cihaz bildirim jetonlarınız ve bir yürüyüşe bağlı olmayan adresleriniz.</p>
+<ul><li><strong>Kapatılır ama saklanır:</strong> köpek profilleriniz pasife alınır ve size olan</li></ul>
+<p>bağı kaldırılır. Bir yürüyüşe bağlı adreslerin içi boşaltılır ("Silinmiş"); satırın kendisi, o yürüyüşün kaydı bozulmasın diye kalır.</p>
+<ul><li><strong>Kimliğe bağlanamaz biçimde saklanır:</strong> yürüyüş, değerlendirme ve muhasebe</li></ul>
+<p>kayıtları. Bunlar mevzuat gereği tutulur; yorumlarınızın metni silinir.</p>
+<p>Talepleriniz için: destek@sevimlipati.com</p>
+<h2>8. Güvenlik</h2>
+<p>Veriler aktarımda TLS ile şifrelenir. Veritabanında satır düzeyi güvenlik (RLS) uygulanır: her kullanıcı yalnız kendi verisine ve kendisine atanan yürüyüşün verisine erişir. Yönetici işlemleri denetim kaydına yazılır.</p>
+<p>Dosya depolamada iki farklı koruma düzeyi var; ikisini de açıkça yazıyoruz:</p>
+<ul><li><strong>Kapalı alan — gezdirici belgeleri ve yürüyüş fotoğrafları.</strong> Kimlik ve</li></ul>
+<p>adli sicil belgeleri ile yürüyüş sırasında çekilen fotoğraflar herkese kapalı alanlarda tutulur; yalnız yetkili taraf, imzalı ve süreli bağlantıyla görüntüleyebilir.</p>
+<ul><li><strong>Bağlantıyla erişilen alan — köpek ve profil fotoğrafları.</strong> Bu görseller</li></ul>
+<p>tahmin edilemeyecek uzunlukta rastgele bir adresle sunulur. Adres uygulama içinde yalnız ilgili taraflara gösterilir; ancak adresi ELİNDE BULUNDURAN biri, oturum açmadan da görseli açabilir — bu görsellerde oturum kontrolü yoktur. Bu yüzden köpek ve profil fotoğraflarınızı hassas bilgi (ev girişi, kapı numarası, plaka, belge vb.) içermeyecek şekilde seçmenizi öneririz.</p>
+<h2>9. Çocuklar</h2>
+<p>Uygulama 18 yaşından küçüklere yönelik değildir; kayıtta ve gerekirse ilk açılışta 18 yaşınızı doldurduğunuzu beyan edersiniz, doğum tarihiniz sorulmaz. Reşit olmayan bir kullanıcı tespit edersek hesabı kapatır ve verilerini anonimleştiririz; veli ya da kullanıcı destek@sevimlipati.com adresine bildirebilir.</p>
+<p>Kampanya ve tanıtım bildirimleri yalnız açık izninizle gönderilir; izin varsayılan olarak kapalıdır, Ayarlar › Bildirimler altından istediğiniz an kapatabilirsiniz ve her kampanya bildiriminde kapatma yolu gösterilir. Yürüyüş, teklif, ödeme ve hesap bildirimleri hizmetin parçasıdır, izin gerektirmez ve içlerinde tanıtım yapılmaz.</p>
+<h2>10. Değişiklikler</h2>
+<p>Bu politika değişirse uygulama içinde duyurulur ve yukarıdaki tarih güncellenir.</p>
+<footer>SevimliPati · destek@sevimlipati.com · Kullanım Koşulları: <a href="kosullar.html">kosullar.html</a></footer>
+</main>
+</body>
+</html>

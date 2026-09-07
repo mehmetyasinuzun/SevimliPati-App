@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SevimliPati</title>
+<meta name="description" content="SevimliPati: köpeğin için belgeleri incelenmiş, güven puanlı gezdiriciler. Canlı rota, kapıya varış doğrulaması, teslim onayı. Android beta.">
+<meta property="og:title" content="SevimliPati">
+<meta property="og:description" content="Köpeğin için güvenilir bir yürüyüş arkadaşı. Canlı takip, belgeli gezdiriciler, teslim onayı.">
+<meta property="og:image" content="https://mehmetyasinuzun.github.io/SevimliPati-App/assets/ikon-512.png">
+<link rel="icon" href="assets/favicon-64.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Nunito:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* ---------- tokenlar: marka paleti (uygulama ve ikonla aynı dünya) ---------- */
+:root{
+  --ceviz:#2A1B12;      /* koyu zemin */
+  --ceviz-2:#3A271B;    /* koyu zemin, ikinci ton */
+  --krem:#FBF4EC;       /* açık zemin (uygulamanın zemini) */
+  --krem-2:#F3E7DA;     /* açık zemin, ikinci ton */
+  --toprak:#B5431F;     /* birincil vurgu (uygulamanın düğmesi) */
+  --toprak-2:#8F3216;
+  --kayisi:#F0A35C;     /* ikinci vurgu (pati rozeti) */
+  --kayisi-2:#F6C48E;
+  --rota:#2F6F8F;       /* harita rotası */
+  --cimen:#6E8F5E;      /* doğrulandı / güven */
+  --murekkep:#2A1B12;   /* açık zeminde metin */
+  --murekkep-2:#6B5849;
+  --sut:#FFF9F3;        /* koyu zeminde metin */
+  --sut-2:#D9C7B6;
+  --cizgi:rgba(42,27,18,.12);
+  --cizgi-koyu:rgba(255,249,243,.14);
+  --golge:0 24px 60px -24px rgba(42,27,18,.45);
+  --radius:22px;
+  --display:"Bricolage Grotesque", "Nunito", system-ui, sans-serif;
+  --body:"Nunito", "Segoe UI", system-ui, sans-serif;
+  --olcek: clamp(16px, 1.05vw + 12px, 19px);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0; background:var(--krem); color:var(--murekkep);
+  font-family:var(--body); font-size:var(--olcek); line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3{font-family:var(--display); line-height:1.05; letter-spacing:-.01em; text-wrap:balance; margin:0}
+h1{font-size:clamp(2.4rem, 6.2vw, 5rem); font-weight:800}
+h2{font-size:clamp(1.9rem, 4.2vw, 3.2rem); font-weight:800}
+h3{font-size:clamp(1.15rem, 1.6vw, 1.35rem); font-weight:700}
+p{margin:0}
+a{color:inherit}
+img{max-width:100%; display:block}
+.sarici{width:min(1180px, 100% - 2rem); margin-inline:auto}
+.etiket{font-family:var(--body); font-weight:700; text-transform:uppercase; letter-spacing:.14em; font-size:.74rem; color:var(--toprak)}
+.koyu .etiket{color:var(--kayisi)}
+.govde-metin{max-width:62ch; color:var(--murekkep-2)}
+.koyu .govde-metin{color:var(--sut-2)}
+.dugme{
+  display:inline-flex; align-items:center; gap:.55rem; padding:.95rem 1.4rem; border-radius:999px;
+  font-weight:700; text-decoration:none; border:2px solid transparent; transition:transform .18s ease, box-shadow .18s ease, background .18s;
+  will-change:transform;
+}
+.dugme:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid var(--kayisi); outline-offset:3px}
+.dugme-dolu{background:var(--toprak); color:var(--sut); box-shadow:0 12px 30px -12px rgba(181,67,31,.7)}
+.dugme-dolu:hover{transform:translateY(-2px); background:var(--toprak-2)}
+.dugme-bos{border-color:var(--cizgi-koyu); color:var(--sut)}
+.dugme-bos:hover{transform:translateY(-2px); background:rgba(255,249,243,.06)}
+.acik .dugme-bos{border-color:var(--cizgi); color:var(--murekkep)}
+.acik .dugme-bos:hover{background:rgba(42,27,18,.05)}
+.dugme svg{width:1.1em;height:1.1em}
+
+/* ---------- üst çubuk ---------- */
+.ust{position:sticky; top:0; z-index:50; backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  background:rgba(42,27,18,.72); border-bottom:1px solid var(--cizgi-koyu); color:var(--sut)}
+.ust .sarici{display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.7rem 0}
+.marka{display:flex; align-items:center; gap:.6rem; font-family:var(--display); font-weight:800; font-size:1.2rem; text-decoration:none}
+.marka img{width:34px;height:34px;border-radius:10px}
+.ust nav{display:flex; gap:1.4rem; font-weight:600; font-size:.95rem}
+.ust nav a{text-decoration:none; opacity:.85} .ust nav a:hover{opacity:1}
+@media (max-width:760px){.ust nav{display:none}}
+.ust .dugme{padding:.6rem 1rem; font-size:.9rem}
+
+/* ---------- rota omurgası (masaüstü) ---------- */
+#omurga{position:fixed; left:0; top:0; width:120px; height:100vh; pointer-events:none; z-index:1; opacity:.9}
+#omurga svg{width:100%;height:100%}
+#omurga .yol{fill:none; stroke:var(--kayisi); stroke-width:3; stroke-linecap:round; stroke-dasharray:1200; stroke-dashoffset:1200; opacity:.8}
+#omurga .iz{opacity:0; transition:opacity .5s ease; fill:var(--kayisi)}
+@media (max-width:1240px){#omurga{display:none}}
+
+/* ---------- hero ---------- */
+.hero{background:radial-gradient(1200px 700px at 78% 12%, #4A2E1E 0%, var(--ceviz) 55%), var(--ceviz); color:var(--sut); position:relative; overflow:hidden}
+.hero .sarici{display:grid; grid-template-columns:1.1fr .9fr; gap:3rem; align-items:center; padding:4.5rem 0 5rem; position:relative; z-index:2}
+@media (max-width:900px){.hero .sarici{grid-template-columns:1fr; padding:3rem 0 4rem}}
+.hero h1 .vurgu{color:var(--kayisi); font-style:italic; font-weight:700}
+.hero .alt{margin-top:1.2rem; font-size:1.12rem; max-width:52ch; color:var(--sut-2)}
+.hero .cta{display:flex; flex-wrap:wrap; gap:.8rem; margin-top:2rem}
+.hero .not{margin-top:1rem; font-size:.86rem; color:var(--sut-2); opacity:.85}
+.rozetler{display:flex; flex-wrap:wrap; gap:.6rem 1.2rem; margin-top:2.2rem; font-size:.9rem; color:var(--sut-2)}
+.rozetler span{display:inline-flex; align-items:center; gap:.4rem}
+.rozetler svg{width:1.05em;height:1.05em; color:var(--cimen)}
+
+/* 3B telefon */
+.sahne{perspective:1400px; display:flex; justify-content:center; align-items:center; min-height:560px; position:relative}
+@media (max-width:900px){.sahne{min-height:460px}}
+.telefon{
+  position:relative; width:min(300px, 72vw); aspect-ratio:1/2.05; border-radius:42px; padding:12px;
+  background:linear-gradient(160deg,#4a3a2f,#1c120c); box-shadow:0 40px 80px -30px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.12);
+  transform-style:preserve-3d; transform:rotateY(-16deg) rotateX(8deg); transition:transform .15s ease-out;
+}
+.telefon::before{content:""; position:absolute; inset:-2px; border-radius:44px; background:linear-gradient(140deg, rgba(240,163,92,.55), transparent 40%, transparent 60%, rgba(47,111,143,.35)); z-index:-1; filter:blur(6px)}
+.telefon .ekran{width:100%; height:100%; border-radius:32px; overflow:hidden; background:#FBF4EC; transform:translateZ(6px)}
+.telefon .ekran img{width:100%; height:100%; object-fit:cover; object-position:top}
+.telefon .centik{position:absolute; top:22px; left:50%; transform:translate(-50%,0) translateZ(8px); width:92px; height:10px; border-radius:8px; background:#120b07}
+.telefon-arka{position:absolute; width:min(300px,72vw); aspect-ratio:1/2.05; border-radius:42px; background:rgba(240,163,92,.08); border:1px solid rgba(240,163,92,.25);
+  transform:translateX(-26px) translateY(28px) rotateY(-16deg) rotateX(8deg) translateZ(-60px)}
+.pati{position:absolute; width:26px; height:26px; color:var(--kayisi); opacity:.55; animation:suzul 9s ease-in-out infinite}
+.pati:nth-child(1){left:6%; top:12%; animation-delay:0s}
+.pati:nth-child(2){left:78%; top:8%; animation-delay:-3s; width:20px;height:20px}
+.pati:nth-child(3){left:88%; top:62%; animation-delay:-5s}
+.pati:nth-child(4){left:4%; top:70%; animation-delay:-7s; width:18px;height:18px}
+@keyframes suzul{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-16px) rotate(6deg)}}
+
+/* ---------- bölümler ---------- */
+section{padding:5.5rem 0}
+@media (max-width:760px){section{padding:4rem 0}}
+.koyu{background:var(--ceviz); color:var(--sut)}
+.acik{background:var(--krem)}
+.acik-2{background:var(--krem-2)}
+.baslik-blok{display:grid; gap:.8rem; margin-bottom:2.6rem}
+.baslik-blok h2{max-width:20ch}
+.beliren{opacity:.001; transform:translateY(18px); transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1)}
+.beliren.gorunur{opacity:1; transform:none}
+@media (prefers-reduced-motion:reduce){.beliren{opacity:1; transform:none; transition:none} .pati,.jeton{animation:none} .telefon{transform:none}}
+
+/* nasıl işler: adımlar bir yol üzerinde */
+.adimlar{display:grid; grid-template-columns:repeat(6,1fr); gap:1.2rem; position:relative; counter-reset:adim}
+.adimlar::before{content:""; position:absolute; left:4%; right:4%; top:34px; height:3px; background:repeating-linear-gradient(90deg, var(--kayisi) 0 14px, transparent 14px 26px); opacity:.7}
+@media (max-width:1000px){.adimlar{grid-template-columns:repeat(3,1fr)} .adimlar::before{display:none}}
+@media (max-width:600px){.adimlar{grid-template-columns:1fr 1fr}}
+.adim{display:grid; gap:.6rem; position:relative}
+.adim .ikon{width:70px;height:70px; border-radius:22px; display:grid; place-items:center; background:var(--krem); color:var(--toprak); border:2px solid var(--kayisi-2); position:relative; z-index:1; transition:transform .25s}
+.adim:hover .ikon{transform:translateY(-4px) rotate(-3deg)}
+.adim .ikon svg{width:34px;height:34px}
+.adim h3{font-size:1.05rem}
+.adim p{font-size:.92rem; color:var(--murekkep-2)}
+.adim::after{counter-increment:adim; content:counter(adim); position:absolute; left:52px; top:-8px; width:26px;height:26px; border-radius:50%; background:var(--toprak); color:var(--sut); font-weight:800; font-size:.8rem; display:grid; place-items:center; z-index:2; font-family:var(--display)}
+
+/* canlı yürüyüş: harita + telefon */
+.canli{display:grid; grid-template-columns:1.15fr .85fr; gap:3rem; align-items:center}
+@media (max-width:900px){.canli{grid-template-columns:1fr}}
+.harita{position:relative; border-radius:var(--radius); overflow:hidden; background:#1F2A30; box-shadow:var(--golge); aspect-ratio:4/3}
+.harita svg{width:100%;height:100%; display:block}
+.harita .sokak{stroke:rgba(255,249,243,.14); stroke-width:6; fill:none; stroke-linecap:round}
+.harita .sokak-ince{stroke:rgba(255,249,243,.08); stroke-width:3; fill:none}
+.harita .park{fill:rgba(110,143,94,.22)}
+.harita .deniz{fill:rgba(47,111,143,.35)}
+.harita .rota-golge{stroke:rgba(240,163,92,.25); stroke-width:14; fill:none; stroke-linecap:round; stroke-linejoin:round}
+.harita .rota-cizgi{stroke:var(--kayisi); stroke-width:5; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1600; stroke-dashoffset:1600}
+.harita.canlandir .rota-cizgi{animation:ciz 6s ease-in-out infinite}
+@keyframes ciz{0%{stroke-dashoffset:1600}60%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
+.harita .nokta{fill:var(--kayisi); stroke:#1F2A30; stroke-width:3}
+.harita .kopek{animation:kopek 6s ease-in-out infinite; offset-path:path("M90 420 C 150 400, 170 330, 240 320 S 330 360, 380 300 S 420 200, 520 210 S 620 260, 680 190"); offset-rotate:0deg}
+@keyframes kopek{0%{offset-distance:0%}60%{offset-distance:100%}100%{offset-distance:100%}}
+.harita .olay{opacity:0; animation:olay 6s ease-in-out infinite}
+.harita .olay:nth-of-type(1){animation-delay:.8s}.harita .olay:nth-of-type(2){animation-delay:1.9s}.harita .olay:nth-of-type(3){animation-delay:2.7s}.harita .olay:nth-of-type(4){animation-delay:3.4s}
+@keyframes olay{0%{opacity:0; transform:translateY(6px)}12%{opacity:1; transform:none}70%{opacity:1}100%{opacity:0}}
+.harita text{font-family:var(--body); font-size:13px; font-weight:700; fill:#1F2A30}
+.harita .balon{fill:var(--krem)}
+.olaylar{display:grid; gap:.9rem; margin-top:1.4rem}
+.olay-satir{display:flex; gap:.9rem; align-items:flex-start}
+.olay-satir .nokta2{flex:0 0 auto; width:40px;height:40px; border-radius:14px; display:grid; place-items:center; background:var(--krem-2); color:var(--toprak)}
+.olay-satir svg{width:22px;height:22px}
+.olay-satir strong{display:block; font-family:var(--display); font-size:1.02rem}
+.olay-satir span{color:var(--murekkep-2); font-size:.95rem}
+.telefon-mini{perspective:1200px; display:flex; justify-content:center}
+.telefon-mini .cerceve{width:min(260px,70vw); aspect-ratio:1/2.05; border-radius:36px; padding:10px; background:linear-gradient(160deg,#4a3a2f,#1c120c); box-shadow:var(--golge); transform:rotateY(14deg) rotateX(4deg)}
+.telefon-mini .cerceve img{width:100%;height:100%; object-fit:cover; object-position:top; border-radius:28px}
+
+/* güven: belge yelpazesi */
+.guven{display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center}
+@media (max-width:900px){.guven{grid-template-columns:1fr}}
+.yelpaze{position:relative; height:360px; perspective:1200px}
+.belge{position:absolute; left:50%; top:50%; width:min(250px, 62vw); aspect-ratio:3/4; border-radius:18px; background:var(--krem); color:var(--murekkep); box-shadow:0 30px 60px -28px rgba(0,0,0,.6);
+  padding:1.2rem; display:grid; align-content:start; gap:.5rem; transform-origin:50% 120%; transition:transform .5s cubic-bezier(.2,.7,.2,1);
+  transform:translate(-50%,-50%) rotate(var(--r)) translateZ(var(--z))}
+.belge .muhur{margin-top:auto; display:inline-flex; align-items:center; gap:.4rem; color:var(--cimen); font-weight:800; font-size:.85rem; letter-spacing:.06em; text-transform:uppercase}
+.belge .muhur svg{width:18px;height:18px}
+.belge h3{font-size:1.1rem}
+.belge p{font-size:.88rem; color:var(--murekkep-2)}
+.belge .cizgi{height:6px; border-radius:6px; background:var(--krem-2)}
+.yelpaze:hover .belge{transform:translate(-50%,-50%) rotate(calc(var(--r) * 1.6)) translateZ(var(--z))}
+.liste{display:grid; gap:1rem; margin-top:1.4rem}
+.liste li{list-style:none; display:flex; gap:.8rem; align-items:flex-start}
+.liste li svg{flex:0 0 auto; width:24px;height:24px; color:var(--cimen); margin-top:.15rem}
+.koyu .liste li{color:var(--sut-2)} .koyu .liste li strong{color:var(--sut)}
+.liste strong{display:block; font-family:var(--display)}
+ul.liste{padding:0; margin:1.4rem 0 0}
+
+/* seviyeler */
+.seviyeler{display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:2rem}
+@media (max-width:760px){.seviyeler{grid-template-columns:1fr 1fr}}
+.seviye{padding:1.2rem; border-radius:18px; background:rgba(255,249,243,.05); border:1px solid var(--cizgi-koyu); display:grid; gap:.4rem}
+.seviye .rozet{width:44px;height:44px; border-radius:50%; display:grid; place-items:center; font-family:var(--display); font-weight:800; color:var(--ceviz)}
+.seviye p{font-size:.9rem; color:var(--sut-2)}
+.bronz .rozet{background:#C88E62}.gumus .rozet{background:#D9D4CC}.altin .rozet{background:#E9C46A}.usta .rozet{background:var(--kayisi)}
+
+/* jeton (CSS 3B) */
+.jeton-sahne{perspective:900px; display:grid; place-items:center; height:200px}
+.jeton{position:relative; width:130px;height:130px; transform-style:preserve-3d; animation:don 8s linear infinite}
+.jeton .yuz{position:absolute; inset:0; border-radius:50%; display:grid; place-items:center; background:radial-gradient(circle at 35% 30%, #F6C48E, #E88F3B 60%, #B5431F); box-shadow:inset 0 0 0 8px rgba(255,249,243,.25); backface-visibility:hidden}
+.jeton .yuz svg{width:64px;height:64px; color:var(--sut)}
+.jeton .yuz.arka{transform:rotateY(180deg)}
+.jeton .kenar{position:absolute; inset:0; border-radius:50%; background:#8F3216; transform:translateZ(-6px)}
+@keyframes don{from{transform:rotateY(0) rotateX(12deg)}to{transform:rotateY(360deg) rotateX(12deg)}}
+.iki-sutun{display:grid; grid-template-columns:1fr 1fr; gap:3rem; align-items:center}
+@media (max-width:900px){.iki-sutun{grid-template-columns:1fr}}
+
+/* gezdiriciler */
+.gezdirici-akis{display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-top:2rem}
+@media (max-width:760px){.gezdirici-akis{grid-template-columns:1fr 1fr}}
+.kart{padding:1.3rem; border-radius:20px; background:var(--krem); border:1px solid var(--cizgi); display:grid; gap:.5rem; box-shadow:0 14px 34px -26px rgba(42,27,18,.5)}
+.kart .k-ikon{width:46px;height:46px; border-radius:14px; background:var(--krem-2); color:var(--toprak); display:grid; place-items:center}
+.kart .k-ikon svg{width:24px;height:24px}
+.kart p{font-size:.93rem; color:var(--murekkep-2)}
+
+/* misyon */
+.misyon{text-align:center}
+.misyon .buyuk{font-family:var(--display); font-size:clamp(1.5rem,3.2vw,2.4rem); font-weight:700; line-height:1.25; max-width:26ch; margin:0 auto; text-wrap:balance}
+.misyon .buyuk em{color:var(--kayisi); font-style:normal}
+.misyon .govde-metin{margin:1.6rem auto 0; text-align:left}
+
+/* SSS */
+.sss{max-width:760px; margin:0 auto; display:grid; gap:.6rem}
+.sss details{border:1px solid var(--cizgi); border-radius:16px; background:var(--krem); padding:0 1.2rem}
+.sss summary{cursor:pointer; padding:1rem 0; font-family:var(--display); font-weight:700; font-size:1.05rem; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:1rem}
+.sss summary::-webkit-details-marker{display:none}
+.sss summary::after{content:"+"; font-size:1.4rem; color:var(--toprak); transition:transform .2s}
+.sss details[open] summary::after{transform:rotate(45deg)}
+.sss details p{padding:0 0 1.1rem; color:var(--murekkep-2)}
+
+/* son çağrı + altbilgi */
+.son{background:linear-gradient(135deg, var(--toprak), #D46A3A); color:var(--sut); text-align:center}
+.son h2{max-width:22ch; margin:0 auto}
+.son .cta{display:flex; justify-content:center; flex-wrap:wrap; gap:.8rem; margin-top:1.8rem}
+.son .dugme-dolu{background:var(--ceviz); box-shadow:none}
+.son .dugme-bos{border-color:rgba(255,249,243,.5); color:var(--sut)}
+.son .not{margin-top:1rem; font-size:.9rem; opacity:.9}
+footer{background:var(--ceviz); color:var(--sut-2); padding:2.5rem 0; font-size:.9rem}
+footer .sarici{display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem}
+footer nav{display:flex; flex-wrap:wrap; gap:1.2rem}
+footer a{text-decoration:none; opacity:.85} footer a:hover{opacity:1; text-decoration:underline}
+</style>
+</head>
+<body>
+
+<!-- rota omurgası: kaydırdıkça çizilir, pati izleri belirir -->
+<div id="omurga" aria-hidden="true">
+  <svg viewBox="0 0 120 900" preserveAspectRatio="none">
+    <path class="yol" d="M60 0 C 90 120, 20 220, 60 330 S 100 520, 50 640 S 80 820, 60 900"/>
+    <g class="iz" data-esik=".12"><circle cx="66" cy="120" r="5"/><circle cx="56" cy="110" r="4"/><circle cx="76" cy="112" r="4"/><circle cx="66" cy="102" r="3"/></g>
+    <g class="iz" data-esik=".38"><circle cx="48" cy="340" r="5"/><circle cx="38" cy="330" r="4"/><circle cx="58" cy="332" r="4"/><circle cx="48" cy="322" r="3"/></g>
+    <g class="iz" data-esik=".62"><circle cx="70" cy="560" r="5"/><circle cx="60" cy="550" r="4"/><circle cx="80" cy="552" r="4"/><circle cx="70" cy="542" r="3"/></g>
+    <g class="iz" data-esik=".86"><circle cx="54" cy="790" r="5"/><circle cx="44" cy="780" r="4"/><circle cx="64" cy="782" r="4"/><circle cx="54" cy="772" r="3"/></g>
+  </svg>
+</div>
+
+<header class="ust">
+  <div class="sarici">
+    <a class="marka" href="#"><img src="assets/ikon-512.png" alt=""> SevimliPati</a>
+    <nav aria-label="Bölümler">
+      <a href="#nasil">Nasıl işler</a>
+      <a href="#canli">Canlı yürüyüş</a>
+      <a href="#guven">Güven</a>
+      <a href="#gezdirici">Gezdiriciler</a>
+      <a href="#sss">Sorular</a>
+    </nav>
+    <a class="dugme dugme-dolu" href="#indir">Beta'ya katıl</a>
+  </div>
+</header>
+
+<main>
+<!-- ================= HERO ================= -->
+<section class="hero koyu" id="ust">
+  <div class="sarici">
+    <div>
+      <p class="etiket">Türkiye için köpek gezdirme</p>
+      <h1 style="margin-top:.8rem">Köpeğin için <span class="vurgu">güvenilir</span> bir yürüyüş arkadaşı.</h1>
+      <p class="alt">Belgeleri incelenmiş, güven puanlı gezdiriciler. Yürüyüşü canlı izlersin, kapıya geldiğini görürsün, köpeğin döndüğünde sen onaylarsın.</p>
+      <div class="cta">
+        <a class="dugme dugme-dolu" href="#indir">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+          Android beta'yı indir
+        </a>
+        <a class="dugme dugme-bos" href="https://mehmetyasinuzun.github.io/SevimliPati-App/uygulama/" target="_blank" rel="noopener">Web'de aç</a>
+      </div>
+      <div class="rozetler">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Belge incelemeli gezdirici onayı</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Canlı rota paylaşımı</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> Teslim onayı sende</span>
+      </div>
+      <p class="not">Kapalı beta · Android · Google Play yakında.</p>
+    </div>
+    <div class="sahne" id="sahne">
+      <svg class="pati" viewBox="0 0 24 24" fill="currentColor"><circle cx="7" cy="8" r="2.2"/><circle cx="12" cy="6" r="2.2"/><circle cx="17" cy="8" r="2.2"/><path d="M12 10c-3.5 0-6 2.6-6 5.2 0 2 1.4 3.3 3.2 3.3 1 0 1.8-.4 2.8-.4s1.8.4 2.8.4c1.8 0 3.2-1.3 3.2-3.3 0-2.6-2.5-5.2-6-5.2z"/></svg>
+      <svg class="pati" viewBox="0 0 24 24" fill="currentColor"><circle cx="7" cy="8" r="2.2"/><circle cx="12" cy="6" r="2.2"/><circle cx="17" cy="8" r="2.2"/><path d="M12 10c-3.5 0-6 2.6-6 5.2 0 2 1.4 3.3 3.2 3.3 1 0 1.8-.4 2.8-.4s1.8.4 2.8.4c1.8 0 3.2-1.3 3.2-3.3 0-2.6-2.5-5.2-6-5.2z"/></svg>
+      <svg class="pati" viewBox="0 0 24 24" fill="currentColor"><circle cx="7" cy="8" r="2.2"/><circle cx="12" cy="6" r="2.2"/><circle cx="17" cy="8" r="2.2"/><path d="M12 10c-3.5 0-6 2.6-6 5.2 0 2 1.4 3.3 3.2 3.3 1 0 1.8-.4 2.8-.4s1.8.4 2.8.4c1.8 0 3.2-1.3 3.2-3.3 0-2.6-2.5-5.2-6-5.2z"/></svg>
+      <svg class="pati" viewBox="0 0 24 24" fill="currentColor"><circle cx="7" cy="8" r="2.2"/><circle cx="12" cy="6" r="2.2"/><circle cx="17" cy="8" r="2.2"/><path d="M12 10c-3.5 0-6 2.6-6 5.2 0 2 1.4 3.3 3.2 3.3 1 0 1.8-.4 2.8-.4s1.8.4 2.8.4c1.8 0 3.2-1.3 3.2-3.3 0-2.6-2.5-5.2-6-5.2z"/></svg>
+      <div class="telefon-arka" aria-hidden="true"></div>
+      <div class="telefon" id="telefon">
+        <div class="centik"></div>
+        <div class="ekran"><img src="assets/ekran-1-yuruyusler.jpg" alt="SevimliPati uygulamasında yürüyüş listesi: Karabaş için gezdirici atanmış, Duman için teklifler bekleniyor" width="600" height="1200"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NASIL İŞLER ================= -->
+<section class="acik" id="nasil">
+  <div class="sarici">
+    <div class="baslik-blok beliren">
+      <p class="etiket">Nasıl işler</p>
+      <h2>Bir yürüyüş, altı adım. Her adımda ne olduğunu görürsün.</h2>
+      <p class="govde-metin">Sıra önemli: gezdirici seçmeden para gitmez, köpeğin dönmeden yürüyüş kapanmaz.</p>
+    </div>
+    <div class="adimlar beliren">
+      <div class="adim">
+        <div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v8m-2.5-6h4a1.5 1.5 0 010 3h-3a1.5 1.5 0 000 3h4"/></svg></div>
+        <h3>Jeton yükle</h3><p>Yürüyüşler jetonla ödenir. Jetonun cüzdanında, son kullanma tarihiyle birlikte durur.</p>
+      </div>
+      <div class="adim">
+        <div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4m8-4v4M3 10h18M8 15h3"/></svg></div>
+        <h3>Yürüyüşü planla</h3><p>Köpeğini, adresini, gün ve saati seç. Süreyi sen belirlersin.</p>
+      </div>
+      <div class="adim">
+        <div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.5c2.8.3 5.5 2.3 5.5 5.5"/></svg></div>
+        <h3>Gezdiriciler teklif verir</h3><p>Yürüyüşün havuza düşer; onaylı gezdiriciler notlarıyla talip olur.</p>
+      </div>
+      <div class="adim">
+        <div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <h3>Seç ve onayla</h3><p>Profili, güven puanını ve seviyesini görür, birini seçersin. Jeton o an ayrılır.</p>
+      </div>
+      <div class="adim">
+        <div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.4-7-11a7 7 0 0114 0c0 5.6-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg></div>
+        <h3>Canlı izle</h3><p>Yola çıktı, kapıya geldi, yürüyor. Rotayı ve olayları anında görürsün.</p>
+      </div>
+      <div class="adim">
+        <div class="ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.9.8-4.3 4.1 1 5.8L12 16.3 6.8 19l1-5.8-4.3-4.1 5.9-.8z"/></svg></div>
+        <h3>Teslim onayı ve puan</h3><p>Köpeğin döndü mü, sen onaylarsın. Sonra iki taraf birbirini değerlendirir.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CANLI YÜRÜYÜŞ ================= -->
+<section class="acik-2" id="canli">
+  <div class="sarici">
+    <div class="baslik-blok beliren">
+      <p class="etiket">Canlı yürüyüş</p>
+      <h2>Tasma senin elinde değil ama ekran senin elinde.</h2>
+      <p class="govde-metin">Yürüyüş başladığında gezdiricinin konumu anlık paylaşılır. Her önemli an bir olay olarak kaydedilir ve sana bildirim düşer.</p>
+    </div>
+    <div class="canli">
+      <div class="beliren">
+        <div class="harita" id="harita" aria-label="Canlı yürüyüş haritası animasyonu">
+          <svg viewBox="0 0 760 570" role="img">
+            <rect width="760" height="570" fill="#1F2A30"/>
+            <path class="deniz" d="M0 470 C 120 430, 260 500, 380 470 S 640 440, 760 480 L760 570 L0 570 Z"/>
+            <rect class="park" x="470" y="80" width="200" height="130" rx="26"/>
+            <g class="sokak-ince"><path d="M0 120H760M0 220H760M0 320H760M0 400H760M120 0V470M240 0V480M360 0V470M480 0V460M600 0V450M700 0V450"/></g>
+            <g class="sokak"><path d="M60 0V470M0 260H760M420 0V470M0 60H760"/></g>
+            <path class="rota-golge" d="M90 420 C 150 400, 170 330, 240 320 S 330 360, 380 300 S 420 200, 520 210 S 620 260, 680 190"/>
+            <path class="rota-cizgi" d="M90 420 C 150 400, 170 330, 240 320 S 330 360, 380 300 S 420 200, 520 210 S 620 260, 680 190"/>
+            <circle class="nokta" cx="90" cy="420" r="9"/>
+            <circle class="nokta" cx="680" cy="190" r="9"/>
+            <g class="olay"><rect class="balon" x="60" y="440" width="110" height="30" rx="10"/><text x="72" y="460">Kapıya geldi</text></g>
+            <g class="olay"><rect class="balon" x="220" y="270" width="92" height="30" rx="10"/><text x="232" y="290">Yola çıktı</text></g>
+            <g class="olay"><rect class="balon" x="392" y="248" width="70" height="30" rx="10"/><text x="404" y="268">Su içti</text></g>
+            <g class="olay"><rect class="balon" x="560" y="150" width="90" height="30" rx="10"/><text x="572" y="170">Fotoğraf</text></g>
+            <g class="kopek"><circle r="13" fill="#F0A35C" stroke="#1F2A30" stroke-width="3"/><circle r="4" cy="-1" fill="#1F2A30"/></g>
+          </svg>
+        </div>
+        <div class="olaylar">
+          <div class="olay-satir"><div class="nokta2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg></div><div><strong>Kapıya geldi, konumla doğrulandı</strong><span>Gezdirici "kapıdayım" dediğinde konumu adresine yakın olmak zorunda. Uzaktaysa buton çalışmaz.</span></div></div>
+          <div class="olay-satir"><div class="nokta2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M12 4v16"/></svg></div><div><strong>Olaylar tek tek kaydedilir</strong><span>Yola çıktı, kaka, su, fotoğraf: hepsi yürüyüş günlüğünde saatiyle durur.</span></div></div>
+          <div class="olay-satir"><div class="nokta2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></div><div><strong>Bitiş kararı sende</strong><span>Yürüyüş bittiğinde "köpeğim döndü" onayını sen verirsin. Onay verilmeden hakediş kapanmaz.</span></div></div>
+        </div>
+      </div>
+      <div class="telefon-mini beliren">
+        <div class="cerceve"><img src="assets/ekran-3-yuruyus-detayi.jpg" alt="Yürüyüş detayı: Karabaş, durum çizelgesi havuzda ve gezdirici atandı, gezdirici Ali Demir gümüş seviye" width="520" height="1066" loading="lazy"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GÜVEN ================= -->
+<section class="koyu" id="guven">
+  <div class="sarici">
+    <div class="baslik-blok beliren">
+      <p class="etiket">Güven</p>
+      <h2>Kapını açacağın kişi hakkında bilmen gerekenler, uygulamanın içinde.</h2>
+      <p class="govde-metin">Bir gezdirici havuza girmeden önce belgeleri incelenir. Girdikten sonra da puanı ve davranışı takip edilir.</p>
+    </div>
+    <div class="guven">
+      <div class="yelpaze beliren" aria-hidden="true">
+        <div class="belge" style="--r:-14deg; --z:-40px"><h3>Kimlik</h3><p>Ad ve kimlik doğrulaması</p><div class="cizgi"></div><div class="cizgi" style="width:70%"></div><span class="muhur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>İncelendi</span></div>
+        <div class="belge" style="--r:-5deg; --z:-20px"><h3>Adli sicil</h3><p>Sabıka kaydı belgesi, süresi izlenir</p><div class="cizgi"></div><div class="cizgi" style="width:55%"></div><span class="muhur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>İncelendi</span></div>
+        <div class="belge" style="--r:4deg; --z:0px"><h3>Adres belgesi</h3><p>İkamet doğrulaması</p><div class="cizgi"></div><div class="cizgi" style="width:80%"></div><span class="muhur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>İncelendi</span></div>
+        <div class="belge" style="--r:13deg; --z:20px"><h3>Sertifika</h3><p>Varsa eğitim ve deneyim belgesi</p><div class="cizgi"></div><div class="cizgi" style="width:62%"></div><span class="muhur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>İncelendi</span></div>
+      </div>
+      <div class="beliren">
+        <ul class="liste">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg><div><strong>Belge incelemesi olmadan havuz yok</strong>Kimlik, adli sicil ve adres belgesi yüklenir, yönetici inceler. Adli sicil belgesinin süresi dolunca gezdirici yenileyene kadar havuzdan çıkar.</div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg><div><strong>Güven puanı davranıştan gelir</strong>Tamamlanan yürüyüş, zamanında varış ve teslim onayı puanı artırır. Geç iptal düşürür: yürüyüşe ne kadar yakınsa o kadar çok.</div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg><div><strong>Açık olay varken iş alamaz</strong>Bir yürüyüşte sorun bildirildiyse, karar verilene kadar o gezdirici yeni teklif veremez.</div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 014 4L7.5 20.5 2 22l1.5-5.5z"/></svg><div><strong>İki yönlü değerlendirme</strong>Yürüyüşten sonra sen gezdiriciyi, gezdirici seni puanlar. Profil bu geçmişi taşır.</div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 12h8M8 16h5"/></svg><div><strong>Kurallar açık, sürprizsiz</strong>Gezdirici iptal ederse jetonun geri gelir; sen geç iptal edersen gezdiriciye tazminat ayrılır. Tüm kurallar Kullanım Koşulları'nda.</div></li>
+        </ul>
+        <div class="seviyeler">
+          <div class="seviye bronz"><div class="rozet">B</div><strong>Bronz</strong><p>Yeni onaylanmış gezdirici</p></div>
+          <div class="seviye gumus"><div class="rozet">G</div><strong>Gümüş</strong><p>Düzenli, tamamlanmış yürüyüşler</p></div>
+          <div class="seviye altin"><div class="rozet">A</div><strong>Altın</strong><p>Uzun süredir güvenilir</p></div>
+          <div class="seviye usta"><div class="rozet">U</div><strong>Usta</strong><p>En deneyimli gezdiriciler</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= JETON / CÜZDAN ================= -->
+<section class="acik" id="jeton">
+  <div class="sarici iki-sutun">
+    <div class="beliren">
+      <p class="etiket">Jeton ve cüzdan</p>
+      <h2 style="margin-top:.6rem">Para değil jeton dolaşır. Her hareket görünür.</h2>
+      <p class="govde-metin" style="margin-top:1rem">Yürüyüş planlarken jeton ayrılır, iptal edilirse geri gelir, tamamlanınca gezdiricinin hakedişine dönüşür. Cüzdanında hangi jetonun ne zaman biteceğini görürsün; süresi yaklaşınca haber verilir.</p>
+      <ul class="liste">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><div><strong>Gezdirici seçilmeden jeton gitmez</strong>Teklif aşamasında hiçbir şey ayrılmaz.</div></li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><div><strong>Beta süresince davet kodu</strong>Kartlı ödeme açılana kadar jetonlar davet koduyla yüklenir; kart ödemesi hazırlanıyor.</div></li>
+      </ul>
+    </div>
+    <div class="beliren">
+      <div class="jeton-sahne" aria-hidden="true">
+        <div class="jeton">
+          <div class="yuz on"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="7" cy="8" r="2.2"/><circle cx="12" cy="6" r="2.2"/><circle cx="17" cy="8" r="2.2"/><path d="M12 10c-3.5 0-6 2.6-6 5.2 0 2 1.4 3.3 3.2 3.3 1 0 1.8-.4 2.8-.4s1.8.4 2.8.4c1.8 0 3.2-1.3 3.2-3.3 0-2.6-2.5-5.2-6-5.2z"/></svg></div>
+          <div class="yuz arka"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="7" cy="8" r="2.2"/><circle cx="12" cy="6" r="2.2"/><circle cx="17" cy="8" r="2.2"/><path d="M12 10c-3.5 0-6 2.6-6 5.2 0 2 1.4 3.3 3.2 3.3 1 0 1.8-.4 2.8-.4s1.8.4 2.8.4c1.8 0 3.2-1.3 3.2-3.3 0-2.6-2.5-5.2-6-5.2z"/></svg></div>
+          <div class="kenar"></div>
+        </div>
+      </div>
+      <div class="telefon-mini"><div class="cerceve" style="transform:rotateY(-10deg) rotateX(4deg)"><img src="assets/ekran-2-cuzdan.jpg" alt="Cüzdan ekranı: jeton bakiyesi, paketler ve son hareketler" width="520" height="1066" loading="lazy"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GEZDİRİCİLER ================= -->
+<section class="acik-2" id="gezdirici">
+  <div class="sarici">
+    <div class="baslik-blok beliren">
+      <p class="etiket">Gezdiriciler için</p>
+      <h2>Köpekleri seviyorsan, bu iş sana göre.</h2>
+      <p class="govde-metin">Başvur, belgelerini yükle, onaylan. Havuzdan sana uyan yürüyüşe teklif ver; hakedişin haftalık ödenir.</p>
+    </div>
+    <div class="gezdirici-akis beliren">
+      <div class="kart"><div class="k-ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h6"/></svg></div><h3>Belgelerini yükle</h3><p>Kimlik, adli sicil, adres belgesi; varsa sertifika. Uygulamadan fotoğrafla.</p></div>
+      <div class="kart"><div class="k-ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div><h3>Onaylan</h3><p>Yönetici belgeleri inceler. Onaylanınca havuz açılır.</p></div>
+      <div class="kart"><div class="k-ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.4-7-11a7 7 0 0114 0c0 5.6-7 11-7 11z"/><circle cx="12" cy="10" r="2.6"/></svg></div><h3>Sana uyan işi seç</h3><p>Havuzda köpeğin cinsini, kilosunu, adresi ve saati görürsün. Notunla teklif ver.</p></div>
+      <div class="kart"><div class="k-ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg></div><h3>Haftalık hakediş</h3><p>Tamamlanan ve onaylanan her yürüyüş hakedişine yazılır; ödeme haftalık yapılır.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MİSYON ================= -->
+<section class="koyu misyon" id="misyon">
+  <div class="sarici beliren">
+    <p class="etiket">Neden SevimliPati</p>
+    <p class="buyuk" style="margin-top:1rem">Köpeğini bir yabancıya emanet etmek <em>kolay olmamalı</em>. Biz de kolaylaştırmıyoruz; <em>güvenilir</em> hâle getiriyoruz.</p>
+    <p class="govde-metin">Şehirde yaşayan bir köpek sahibinin en büyük derdi zamandır; bir hayvanseverin en büyük isteği de bu işi ciddiye alan bir düzen. SevimliPati ikisini aynı kuralların altında buluşturur: belge incelemesi, canlı takip, kapıda doğrulama, teslim onayı ve karşılıklı değerlendirme. Uygulama ne vaat ediyorsa sunucu da onu uygular; ekranda gördüğün her durum, kayıtlı bir olaya dayanır.</p>
+  </div>
+</section>
+
+<!-- ================= SSS ================= -->
+<section class="acik" id="sss">
+  <div class="sarici">
+    <div class="baslik-blok beliren" style="text-align:center"><p class="etiket">Sık sorulanlar</p><h2 style="margin:0 auto">Aklına takılanlar</h2></div>
+    <div class="sss beliren">
+      <details open><summary>Gezdiriciyi ben mi seçiyorum?</summary><p>Evet. Yürüyüşün havuza düşer, onaylı gezdiriciler teklif verir; profillerine, güven puanına ve seviyesine bakıp birini sen seçersin. Sen seçene kadar jetonun ayrılmaz.</p></details>
+      <details><summary>Yürüyüş sırasında ne görüyorum?</summary><p>Gezdiricinin konumunu, yürüyüş rotasını ve olayları: yola çıktı, kapıya geldi, kaka, su, fotoğraf. Yürüyüş bittiğinde köpeğinin döndüğünü sen onaylarsın.</p></details>
+      <details><summary>Gezdirici iptal ederse ne olur?</summary><p>Yürüyüş yeniden havuza düşer ya da iptal olur; jetonun geri gelir. Geç iptal gezdiricinin güven puanını düşürür.</p></details>
+      <details><summary>Bir sorun olursa?</summary><p>Uygulamadan olay bildirirsin. Yönetici inceler, karar verir; karar verilene kadar o gezdirici yeni iş alamaz.</p></details>
+      <details><summary>Kimler kullanabilir?</summary><p>Şu an Android'de kapalı beta. Kullanıcılar 18 yaş ve üzeri olmalı; kayıt sırasında Kullanım Koşulları kabul edilir. Google Play sürümü hazırlanıyor.</p></details>
+      <details><summary>Ödeme nasıl?</summary><p>Yürüyüşler jetonla ödenir. Beta süresince jetonlar davet koduyla yüklenir; kartlı ödeme açıldığında uygulamadan yükleyebileceksin.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= İNDİR ================= -->
+<section class="son" id="indir">
+  <div class="sarici beliren">
+    <p class="etiket" style="color:rgba(255,249,243,.85)">Kapalı beta</p>
+    <h2 style="margin-top:.8rem">İlk yürüyüşe hazır mısın?</h2>
+    <div class="cta">
+      <a class="dugme dugme-dolu" href="https://mjeqgygoargntjwkqfxs.supabase.co/storage/v1/object/public/releases/android/github/SevimliPati-v0.14.0-arm64-v8a.apk">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+        Android APK'sını indir
+      </a>
+      <a class="dugme dugme-bos" href="https://mehmetyasinuzun.github.io/SevimliPati-App/uygulama/" target="_blank" rel="noopener">Web sürümünü aç</a>
+    </div>
+    <p class="not">Android, 64-bit cihazlar. Kurulumda "bilinmeyen kaynak" izni ister; Google Play sürümü hazırlanıyor.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="sarici">
+    <div>© 2026 SevimliPati · Türkiye · 18+</div>
+    <nav aria-label="Belgeler">
+      <a href="https://mehmetyasinuzun.github.io/SevimliPati-App/gizlilik/" target="_blank" rel="noopener">Gizlilik politikası</a>
+      <a href="https://mehmetyasinuzun.github.io/SevimliPati-App/gizlilik/kosullar.html" target="_blank" rel="noopener">Kullanım koşulları</a>
+      <a href="https://mehmetyasinuzun.github.io/SevimliPati-App/uygulama/" target="_blank" rel="noopener">Web uygulaması</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var azHareket = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Bölümler: görünür durumdan başlar (opacity .001), görünüme girince tam.
+  var gozlem = new IntersectionObserver(function(kayitlar){
+    kayitlar.forEach(function(k){ if(k.isIntersecting){ k.target.classList.add('gorunur'); gozlem.unobserve(k.target);} });
+  }, {rootMargin:'0px 0px -8% 0px', threshold:.08});
+  document.querySelectorAll('.beliren').forEach(function(e){ gozlem.observe(e); });
+
+  // Harita: görünüme girince rota çizilir.
+  var harita = document.getElementById('harita');
+  if(harita && !azHareket){
+    new IntersectionObserver(function(k,o){ if(k[0].isIntersecting){ harita.classList.add('canlandir'); o.disconnect(); } }, {threshold:.3}).observe(harita);
+  }
+
+  // 3B telefon: fareyle hafif eğilir.
+  var sahne = document.getElementById('sahne'), tel = document.getElementById('telefon');
+  if(sahne && tel && !azHareket && window.matchMedia('(hover:hover)').matches){
+    sahne.addEventListener('mousemove', function(e){
+      var r = sahne.getBoundingClientRect();
+      var x = (e.clientX - r.left)/r.width - .5, y = (e.clientY - r.top)/r.height - .5;
+      tel.style.transform = 'rotateY(' + (-16 + x*22) + 'deg) rotateX(' + (8 - y*16) + 'deg)';
+    });
+    sahne.addEventListener('mouseleave', function(){ tel.style.transform = ''; });
+  }
+
+  // Rota omurgası: kaydırma ilerlemesine göre çizilir, eşiklerde pati izi belirir.
+  var yol = document.querySelector('#omurga .yol'), izler = document.querySelectorAll('#omurga .iz');
+  function ciz(){
+    var h = document.documentElement, ilerleme = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
+    if(yol){ yol.style.strokeDashoffset = String(1200 - 1200*Math.min(1, ilerleme*1.05)); }
+    izler.forEach(function(iz){ iz.style.opacity = ilerleme >= parseFloat(iz.dataset.esik) ? '1' : '0'; });
+  }
+  if(yol && !azHareket){ ciz(); window.addEventListener('scroll', ciz, {passive:true}); }
+  else if(yol){ yol.style.strokeDashoffset = '0'; izler.forEach(function(iz){ iz.style.opacity='1'; }); }
+})();
+</script>
+</body>
+</html>
