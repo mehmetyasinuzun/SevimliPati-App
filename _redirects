@@ -1,0 +1,6 @@
+# CLOUDFLARE PAGES (2026-09-11, docs/28 §1bbb) — sevimlipati.indevs.in
+# Web uygulamasi GitHub Pages icin `/SevimliPati-App/uygulama/` tabaniyla derli;
+# ayni paket bu alan adinda kokten sunuluyor. Su kural o oneki yeniden yazar
+# (200 = yonlendirme degil, ayni istekte sun): tek derleme, iki adres.
+# GitHub Pages bu dosyayi yok sayar.
+/SevimliPati-App/*  /:splat  200
