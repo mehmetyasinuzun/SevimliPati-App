@@ -132,7 +132,18 @@ section{padding:5.5rem 0}
 .baslik-blok h2{max-width:20ch}
 .beliren{opacity:.001; transform:translateY(18px); transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1)}
 .beliren.gorunur{opacity:1; transform:none}
-@media (prefers-reduced-motion:reduce){.beliren{opacity:1; transform:none; transition:none} .pati,.jeton{animation:none} .telefon{transform:none}}
+/* HAREKETI AZALT: yeni animasyonlar da kapaniyor. Iz TAMAMEN cizili kaliyor
+   (yarim cizgi birakmak rotayi eksik gosterirdi), nabiz sabit, kopek yolun
+   sonunda duruyor. */
+@media (prefers-reduced-motion:reduce){
+  .beliren{opacity:1; transform:none; transition:none}
+  .pati,.jeton{animation:none}
+  .telefon{transform:none}
+  .harita .rota-cizgi{stroke-dashoffset:0; animation:none}
+  .harita .kopek{animation:none; offset-distance:100%}
+  .harita .nabiz{animation:none; opacity:.35}
+  .harita .olay{animation:none; opacity:1}
+}
 
 /* nasıl işler: adımlar bir yol üzerinde */
 .adimlar{display:grid; grid-template-columns:repeat(6,1fr); gap:1.2rem; position:relative; counter-reset:adim}
@@ -157,12 +168,22 @@ section{padding:5.5rem 0}
 .harita .park{fill:rgba(110,143,94,.22)}
 .harita .deniz{fill:rgba(47,111,143,.35)}
 .harita .rota-golge{stroke:rgba(240,163,92,.25); stroke-width:14; fill:none; stroke-linecap:round; stroke-linejoin:round}
-.harita .rota-cizgi{stroke:var(--kayisi); stroke-width:5; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1600; stroke-dashoffset:1600}
+/* IZ ESKIDEN YENIYE KOYULASIYOR — uygulamadaki `izGradyani` ile AYNI
+   duraklar (0 / .55 / 1). Iki yuz ayni seyi soylemeli: koyu olan taraf SIMDI.
+   Duraklar `tool/site-animasyon-kontrol.py` ile Dart kaynagina bagli. */
+.harita .rota-cizgi{stroke:url(#izGrad); stroke-width:5; fill:none; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1600; stroke-dashoffset:1600}
 .harita.canlandir .rota-cizgi{animation:ciz 6s ease-in-out infinite}
 @keyframes ciz{0%{stroke-dashoffset:1600}60%{stroke-dashoffset:0}100%{stroke-dashoffset:0}}
 .harita .nokta{fill:var(--kayisi); stroke:#1F2A30; stroke-width:3}
 .harita .kopek{animation:kopek 6s ease-in-out infinite; offset-path:path("M90 420 C 150 400, 170 330, 240 320 S 330 360, 380 300 S 420 200, 520 210 S 620 260, 680 190"); offset-rotate:0deg}
 @keyframes kopek{0%{offset-distance:0%}60%{offset-distance:100%}100%{offset-distance:100%}}
+/* NABIZ — uygulamadaki `CanliNabiz` ile ayni dil: iki halka yarim tur arayla
+   buyurken soluyor. Kopekle AYNI grubun icinde oldugu icin rotayi kendisi
+   izliyor; ikinci bir yol kopyasi olmuyor. */
+.harita .nabiz{fill:none; stroke:var(--kayisi); stroke-width:2; opacity:0; transform-box:fill-box; transform-origin:center}
+.harita.canlandir .nabiz{animation:nabiz 1.8s ease-out infinite}
+.harita.canlandir .nabiz:nth-of-type(2){animation-delay:.9s}
+@keyframes nabiz{0%{opacity:.45; r:8}100%{opacity:0; r:26}}
 .harita .olay{opacity:0; animation:olay 6s ease-in-out infinite}
 .harita .olay:nth-of-type(1){animation-delay:.8s}.harita .olay:nth-of-type(2){animation-delay:1.9s}.harita .olay:nth-of-type(3){animation-delay:2.7s}.harita .olay:nth-of-type(4){animation-delay:3.4s}
 @keyframes olay{0%{opacity:0; transform:translateY(6px)}12%{opacity:1; transform:none}70%{opacity:1}100%{opacity:0}}
@@ -365,6 +386,14 @@ footer a{text-decoration:none; opacity:.85} footer a:hover{opacity:1; text-decor
       <div class="beliren">
         <div class="harita" id="harita" aria-label="Canlı yürüyüş haritası animasyonu">
           <svg viewBox="0 0 760 570" role="img">
+            <defs>
+              <!-- Duraklar uygulamadaki `izGradyani` ile AYNI: 0 / .55 / 1 -->
+              <linearGradient id="izGrad" gradientUnits="userSpaceOnUse" x1="90" y1="420" x2="680" y2="190">
+                <stop offset="0" stop-color="#F0A35C" stop-opacity=".18"/>
+                <stop offset=".55" stop-color="#F0A35C" stop-opacity=".55"/>
+                <stop offset="1" stop-color="#F0A35C" stop-opacity="1"/>
+              </linearGradient>
+            </defs>
             <rect width="760" height="570" fill="#1F2A30"/>
             <path class="deniz" d="M0 470 C 120 430, 260 500, 380 470 S 640 440, 760 480 L760 570 L0 570 Z"/>
             <rect class="park" x="470" y="80" width="200" height="130" rx="26"/>
@@ -378,7 +407,7 @@ footer a{text-decoration:none; opacity:.85} footer a:hover{opacity:1; text-decor
             <g class="olay"><rect class="balon" x="220" y="270" width="92" height="30" rx="10"/><text x="232" y="290">Yola çıktı</text></g>
             <g class="olay"><rect class="balon" x="392" y="248" width="70" height="30" rx="10"/><text x="404" y="268">Su içti</text></g>
             <g class="olay"><rect class="balon" x="560" y="150" width="90" height="30" rx="10"/><text x="572" y="170">Fotoğraf</text></g>
-            <g class="kopek"><circle r="13" fill="#F0A35C" stroke="#1F2A30" stroke-width="3"/><circle r="4" cy="-1" fill="#1F2A30"/></g>
+            <g class="kopek"><circle class="nabiz" r="8"/><circle class="nabiz" r="8"/><circle r="13" fill="#F0A35C" stroke="#1F2A30" stroke-width="3"/><circle r="4" cy="-1" fill="#1F2A30"/></g>
           </svg>
         </div>
         <div class="olaylar">
@@ -500,7 +529,7 @@ footer a{text-decoration:none; opacity:.85} footer a:hover{opacity:1; text-decor
     <p class="etiket" style="color:rgba(255,249,243,.85)">Kapalı beta</p>
     <h2 style="margin-top:.8rem">İlk yürüyüşe hazır mısın?</h2>
     <div class="cta">
-      <a class="dugme dugme-dolu" href="https://mjeqgygoargntjwkqfxs.supabase.co/storage/v1/object/public/releases/android/github/SevimliPati-v0.15.0-arm64-v8a.apk">
+      <a class="dugme dugme-dolu" href="https://mjeqgygoargntjwkqfxs.supabase.co/storage/v1/object/public/releases/android/github/SevimliPati-v0.15.1-arm64-v8a.apk">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
         Android APK'sını indir
       </a>
